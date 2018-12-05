@@ -4,3 +4,9 @@ Using the [AlphaVantage](https://www.alphavantage.co/documentation/) API our pro
 
 ## Technology
 * React for UI and Queries
+
+
+## Team Members
+* Ephraim Githinji (ephygtz)
+* Sai Kaushik (IceDune)
+* Eugene Prout (EugeneProut)
