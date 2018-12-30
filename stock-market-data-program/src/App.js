@@ -9,9 +9,10 @@ import Favourites from './components/Favourites';
 import Dashboard from './components/Dashboard';
 
 class App extends Component {
+  
   render() {
     return (
-      <div>
+      <div className="component-wrapper">
       <Header></Header>
       <section class="columns is-4 section" style={{'padding-top': '1rem'}}>
       <Dashboard></Dashboard>
