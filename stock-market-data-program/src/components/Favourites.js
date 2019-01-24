@@ -19,6 +19,7 @@ const TableBody = props => {
         return (
             <tr key={index}>
                 <td>{row.ticker}</td>
+                
                 <td>{row.price}</td>
                 <td><input class="button" type="submit" value="X" onClick={() => props.removeFavStock(index)}></input></td>
             </tr>

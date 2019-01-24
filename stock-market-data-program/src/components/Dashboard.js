@@ -68,7 +68,7 @@ class Dashboard extends Component {
 
         this.initialState = {
             ticker: '',
-            price: '',
+            price: '123',
         };
 
         this.state = this.initialState
