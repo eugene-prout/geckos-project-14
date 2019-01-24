@@ -17,14 +17,17 @@ class App extends Component {
 
 
   componentDidMount() {
-  //   if (localStorage.getItem("stocks") == null){
-  //     localStorage.setItem("stocks", "");
-  // }
-  
-    
-    // let value = localStorage.getItem("stocks");
-    // value = JSON.parse(value);
-    // this.setState({ stocks: value });
+    if (localStorage.getItem("stocks_list") != null) {
+      let value = localStorage.getItem("stocks_list");
+      value = JSON.parse(value);
+      this.setState({ stocks_list: value });
+    }
+    else {
+      localStorage.setItem("stocks_list", JSON.stringify([]));
+    }
+
+
+
 
     this.interval = setInterval(() => {
       this.getPrice()
@@ -56,44 +59,45 @@ class App extends Component {
         return i !== index;
       })
     }), function () {
-     
+      localStorage.setItem("stocks_list", JSON.stringify(stocks_list));
     });
   }
 
   handleFavAdd = stock => {
 
     this.setState(({ stocks_list: [...this.state.stocks_list, stock] }), function () {
-this.getPrice()
+      localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
+      this.getPrice()
 
     });
   }
 
   handleQuerySubmit = stock => {
-    const {query} = this.state
-    
+    const { query } = this.state
+
     var url = "https://api.iextrading.com/1.0/stock/" + stock.ticker + "/batch?types=company,price";
 
     fetch(url)
-    .then(results => {
-      return results.json()
-    })
-    .then(function (response) {
-      query.ticker = response.company.symbol
-      query.name = response.company.companyName
-      query.price = response.price
-      query.exchange = response.company.exchange
-      query.sector = response.company.sector
-      query.industry = response.company.industry
-      query.website = response.company.website
-      query.description = response.company.description
-      // console.log(this.state.query.exchange)
-    })
-      .then( () => {
+      .then(results => {
+        return results.json()
+      })
+      .then(function (response) {
+        query.ticker = response.company.symbol
+        query.name = response.company.companyName
+        query.price = response.price
+        query.exchange = response.company.exchange
+        query.sector = response.company.sector
+        query.industry = response.company.industry
+        query.website = response.company.website
+        query.description = response.company.description
+        // console.log(this.state.query.exchange)
+      })
+      .then(() => {
         this.setState({
           query: query,
           show: true
         });
-    })
+      })
   }
 
 
@@ -125,7 +129,7 @@ this.getPrice()
         });
 
       })
-      .then( () => {
+      .then(() => {
         this.setState({
           stocks_list: stocks_list
         });
@@ -141,12 +145,12 @@ this.getPrice()
         <Header></Header>
         <section class="columns is-4 section" style={{ 'padding-top': '1rem' }}>
 
-          <Dashboard 
+          <Dashboard
             handleSubmit={this.handleFavAdd}
-             show={this.state.show} 
-             stock={this.state.query}
-             querySub={this.handleQuerySubmit}
-             ></Dashboard>
+            show={this.state.show}
+            stock={this.state.query}
+            querySub={this.handleQuerySubmit}
+          ></Dashboard>
           <Favourites
             stocks={this.state.stocks_list}
             removeFavStock={this.removeFavourite}
