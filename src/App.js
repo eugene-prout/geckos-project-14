@@ -17,13 +17,18 @@ class App extends Component {
 
 
   componentDidMount() {
+    if (localStorage.getItem("stocks") == null){
+      localStorage.setItem("stocks", "");
+  }
+  
+    
     let value = localStorage.getItem("stocks");
     value = JSON.parse(value);
     this.setState({ stocks: value });
 
     this.interval = setInterval(() => {
       this.getPrice()
-    }, 1000);
+    }, 10000);
 
   }
   url = "";
