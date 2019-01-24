@@ -54,14 +54,17 @@ class App extends Component {
   removeFavourite = index => {
     const { stocks_list } = this.state;
 
-    this.setState(({
+    this.setState({
       stocks_list: stocks_list.filter((stock, i) => {
         return i !== index;
       })
-    }), function () {
-      localStorage.setItem("stocks_list", JSON.stringify(stocks_list));
-    });
-  }
+    },function () {
+    console.log(this.state.stocks_list)
+      localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
+    
+
+  });
+}
 
   handleFavAdd = stock => {
 
