@@ -15,6 +15,9 @@ const TableHeader = () => {
 }
 
 const TableBody = props => {
+    if (props.stocks == null){
+return null
+    }
     const rows = props.stocks.map((row, index) => {
         return (
             <tr key={index}>
@@ -27,6 +30,7 @@ const TableBody = props => {
     });
 
     return <tbody>{rows}</tbody>
+    
 }
 
 class Favourites extends Component {

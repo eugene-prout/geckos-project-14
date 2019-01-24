@@ -17,14 +17,14 @@ class App extends Component {
 
 
   componentDidMount() {
-    if (localStorage.getItem("stocks") == null){
-      localStorage.setItem("stocks", "");
-  }
+  //   if (localStorage.getItem("stocks") == null){
+  //     localStorage.setItem("stocks", "");
+  // }
   
     
-    let value = localStorage.getItem("stocks");
-    value = JSON.parse(value);
-    this.setState({ stocks: value });
+    // let value = localStorage.getItem("stocks");
+    // value = JSON.parse(value);
+    // this.setState({ stocks: value });
 
     this.interval = setInterval(() => {
       this.getPrice()
@@ -34,7 +34,7 @@ class App extends Component {
   url = "";
 
   state = {
-    stocks: [],
+    stocks_list: [],
     show: false,
     query: {
       ticker: "Testing",
@@ -49,21 +49,22 @@ class App extends Component {
   };
 
   removeFavourite = index => {
-    const { stocks } = this.state;
+    const { stocks_list } = this.state;
 
     this.setState(({
-      stocks: stocks.filter((stock, i) => {
+      stocks_list: stocks_list.filter((stock, i) => {
         return i !== index;
       })
     }), function () {
-      localStorage.setItem("stocks", JSON.stringify(this.state.stocks))
+     
     });
   }
 
   handleFavAdd = stock => {
 
-    this.setState(({ stocks: [...this.state.stocks, stock] }), function () {
-      this.getPrice()
+    this.setState(({ stocks_list: [...this.state.stocks_list, stock] }), function () {
+this.getPrice()
+
     });
   }
 
@@ -95,17 +96,12 @@ class App extends Component {
     })
   }
 
-  query = stock => {
-
-  }
-
-
 
   getPrice = () => {
     console.log("getPrice called")
-    const { stocks } = this.state
+    const { stocks_list } = this.state
     var url = ""
-    stocks.forEach((key, index) => {
+    stocks_list.forEach((key, index) => {
       // return console.log(key.ticker)
       url += key.ticker + ","
     });
@@ -119,10 +115,10 @@ class App extends Component {
         // loops over each stock in the response
         Object.keys(response).forEach(function (ResponseStockName, index) {
           // loops over saved stocks
-          Object.keys(stocks).forEach(index => {
+          Object.keys(stocks_list).forEach(index => {
 
-            if (stocks[index].ticker === ResponseStockName) {
-              stocks[index].price = response[ResponseStockName].price;
+            if (stocks_list[index].ticker === ResponseStockName) {
+              stocks_list[index].price = response[ResponseStockName].price;
             }
           })
 
@@ -131,9 +127,7 @@ class App extends Component {
       })
       .then( () => {
         this.setState({
-          stocks: stocks
-        }, () => {
-          localStorage.setItem("stocks", JSON.stringify(this.state.stocks))
+          stocks_list: stocks_list
         });
       });
 
@@ -154,7 +148,7 @@ class App extends Component {
              querySub={this.handleQuerySubmit}
              ></Dashboard>
           <Favourites
-            stocks={this.state.stocks}
+            stocks={this.state.stocks_list}
             removeFavStock={this.removeFavourite}
             getPrice={this.getPrice}
           ></Favourites>
