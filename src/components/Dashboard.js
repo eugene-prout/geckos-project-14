@@ -97,7 +97,6 @@ class Dashboard extends Component {
     addToFav = () => {
         console.log("add fav called");
         this.props.handleSubmit(this.state);
-        this.setState(this.initialState);
     }
 
     submitQuery = () => {
