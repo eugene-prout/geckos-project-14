@@ -12,51 +12,93 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.getPrice = this.getPrice.bind(this);
-  } 
+
+  }
 
 
   componentDidMount() {
     let value = localStorage.getItem("stocks");
     value = JSON.parse(value);
-    this.setState({ stocks : value }, function() {
-      this.state.stocks.forEach((key, index) => {
-        // return console.log(key.ticker)
-        this.url += key.ticker + ","
-    });
+    this.setState({ stocks: value });
 
-
-    this.getPrice();
-    });
+    this.interval = setInterval(() => {
+      this.getPrice()
+    }, 1000);
 
   }
   url = "";
-  
+
   state = {
-    stocks: []
+    stocks: [],
+    show: false,
+    query: {
+      ticker: "Testing",
+      name: "Apple Inc.",
+      price: "123",
+      exchange: "Nasdaq",
+      industry: "Electronics",
+      sector: "",
+      website: "www.apple.com af",
+      description: ""
+    }
   };
 
   removeFavourite = index => {
-    const {stocks} = this.state;
+    const { stocks } = this.state;
 
     this.setState(({
-      stocks : stocks.filter((stock, i) => {
+      stocks: stocks.filter((stock, i) => {
         return i !== index;
       })
-    }), function (){
+    }), function () {
       localStorage.setItem("stocks", JSON.stringify(this.state.stocks))
     });
   }
 
-  handleSubmit = stock => {
-    
-    this.setState(({stocks: [...this.state.stocks, stock]}), function (){
-this.getPrice()
+  handleFavAdd = stock => {
+
+    this.setState(({ stocks: [...this.state.stocks, stock] }), function () {
+      this.getPrice()
     });
   }
 
+  handleQuerySubmit = stock => {
+    const {query} = this.state
+    
+    var url = "https://api.iextrading.com/1.0/stock/" + stock.ticker + "/batch?types=company,price";
+
+    fetch(url)
+    .then(results => {
+      return results.json()
+    })
+    .then(function (response) {
+      query.ticker = response.company.symbol
+      query.name = response.company.companyName
+      query.price = response.price
+      query.exchange = response.company.exchange
+      query.sector = response.company.sector
+      query.industry = response.company.industry
+      query.website = response.company.website
+      query.description = response.company.description
+      // console.log(this.state.query.exchange)
+    })
+      .then( () => {
+        this.setState({
+          query: query,
+          show: true
+        });
+    })
+  }
+
+  query = stock => {
+
+  }
+
+
+
   getPrice = () => {
-    const {stocks} = this.state
-    console.log(stocks)
+    console.log("getPrice called")
+    const { stocks } = this.state
     var url = ""
     stocks.forEach((key, index) => {
       // return console.log(key.ticker)
@@ -64,60 +106,54 @@ this.getPrice()
     });
 
     fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
-    .then(results => {
-      return results.json();
-    })
-    .then(function(response) {
+      .then(results => {
+        return results.json();
+      })
+      .then(function (response) {
 
-      // loops over each stock in the response
-      Object.keys(response).forEach(function(ResponseStockName,index) {
-        // loops over saved stocks
-        Object.keys(stocks).forEach(index => {
+        // loops over each stock in the response
+        Object.keys(response).forEach(function (ResponseStockName, index) {
+          // loops over saved stocks
+          Object.keys(stocks).forEach(index => {
 
-          if (stocks[index].ticker === ResponseStockName)
-          {
-            stocks[index].price = response[ResponseStockName].price;
-          }
-        })
-        // Get the price of the stock
-        // console.log(response[ResponseStockName].price);
-        // // Gets the ticker of the stock
-        // console.log(ResponseStockName);
-         
+            if (stocks[index].ticker === ResponseStockName) {
+              stocks[index].price = response[ResponseStockName].price;
+            }
+          })
+
         });
-      
 
-        // this.setState(this.state.stocks.key : response[key].price)
+      })
+      .then( () => {
+        this.setState({
+          stocks: stocks
+        }, () => {
+          localStorage.setItem("stocks", JSON.stringify(this.state.stocks))
+        });
+      });
 
-        // key: the name of the object key
-        // index: the ordinal position of the key within the object 
-    });
-    this.setState(({stocks : stocks}), function (){
-      localStorage.setItem("stocks", JSON.stringify(this.state.stocks))
-    });
-  
 
-    
   }
-      // return response;
-    
-  
 
   render() {
-    const {stocks} = this.state;
-     
+
     return (
       <div className="component-wrapper">
-      <Header></Header>
-      <section class="columns is-4 section" style={{'padding-top': '1rem'}}>
+        <Header></Header>
+        <section class="columns is-4 section" style={{ 'padding-top': '1rem' }}>
 
-      <Dashboard handleSubmit={this.handleSubmit}></Dashboard>
-      <Favourites 
-        stocks={stocks}
-        removeFavStock={this.removeFavourite}
-        getPrice={this.getPrice}
-        ></Favourites>
-      </section>
+          <Dashboard 
+            handleSubmit={this.handleFavAdd}
+             show={this.state.show} 
+             stock={this.state.query}
+             querySub={this.handleQuerySubmit}
+             ></Dashboard>
+          <Favourites
+            stocks={this.state.stocks}
+            removeFavStock={this.removeFavourite}
+            getPrice={this.getPrice}
+          ></Favourites>
+        </section>
       </div>
     );
   }

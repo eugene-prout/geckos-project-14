@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import 'bulma/css/bulma.css';
 
-const Results = () => {
+const Results = props => {
     return (
         <div class="box">
-            <h2 class="subtitle">Search Results for APPL:</h2>
+            <h2 class="subtitle">Search Results for {props.stock.ticker}:</h2>
             <div class="table-container">
                 <table class="table is-narrow is-hoverable is-fullwidth">
                     <thead>
@@ -17,32 +17,42 @@ const Results = () => {
                     <tbody>
                         <tr>
                             <td>Ticker</td>
-                            <td>AAPL</td>
+                            <td>{props.stock.ticker}</td>
                         </tr>
 
                         <tr>
                             <td>Name</td>
-                            <td>Apple Inc.</td>
+                            <td>{props.stock.name}</td>
                         </tr>
 
                         <tr>
                             <td>Price</td>
-                            <td>$148.00</td>
+                            <td>{"$" + props.stock.price.toFixed(2)}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Description</td>
+                            <td>{props.stock.description}</td>
                         </tr>
 
                         <tr>
                             <td>Exchange</td>
-                            <td>Nasdaq Global Select</td>
+                            <td>{props.stock.exchange}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Sector</td>
+                            <td>{props.stock.sector}</td>
                         </tr>
 
                         <tr>
                             <td>Industry</td>
-                            <td>Computer Hardware</td>
+                            <td>{props.stock.industry}</td>
                         </tr>
 
                         <tr>
                             <td>Website</td>
-                            <td>www.apple.com</td>
+                            <td>{props.stock.website}</td>
                         </tr>
 
                     </tbody>
@@ -50,7 +60,7 @@ const Results = () => {
 
 
 
-                <input class="button" value="Add to favourites"></input>
+                <input class="button" type="button" value="Add To Favourites" onClick={props.DaddtoFav}></input>
 
 
             </div>
@@ -68,7 +78,7 @@ class Dashboard extends Component {
 
         this.initialState = {
             ticker: '',
-            price: '123',
+            price: 123,
         };
 
         this.state = this.initialState
@@ -84,13 +94,19 @@ class Dashboard extends Component {
         
     }
 
-    submitForm = () => {
+    addToFav = () => {
+        console.log("add fav called");
         this.props.handleSubmit(this.state);
         this.setState(this.initialState);
     }
 
+    submitQuery = () => {
+        this.props.querySub(this.state);
+    }
+
     render() {
         const { ticker, price} = this.state
+        const {show, stock} = this.props
 
         return (
 
@@ -106,12 +122,12 @@ class Dashboard extends Component {
                             </p>
 
                             <p class="control">
-                                <input class="button" type="button" value="Submit" onClick={this.submitForm}></input>
+                                <input class="button" type="button" value="Submit" onClick={this.submitQuery}></input>
                             </p>
                         </div>
                     </form>
                 </div>
-                <Results />
+                { show ? <Results stock={stock} DaddtoFav={this.addToFav} /> : null }
 
             </section>
         );

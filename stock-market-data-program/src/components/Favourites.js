@@ -20,7 +20,7 @@ const TableBody = props => {
             <tr key={index}>
                 <td>{row.ticker}</td>
                 
-                <td>{row.price}</td>
+                <td>{"$" + row.price.toFixed(2)}</td>
                 <td><input class="button" type="submit" value="X" onClick={() => props.removeFavStock(index)}></input></td>
             </tr>
         );
@@ -34,7 +34,7 @@ class Favourites extends Component {
 
     render() {
 
-        const { stocks, removeFavStock, getPrice } = this.props;
+        const {stocks, removeFavStock, getPrice } = this.props;
 
 
 
