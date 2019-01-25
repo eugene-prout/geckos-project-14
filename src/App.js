@@ -20,13 +20,15 @@ class App extends Component {
     if (localStorage.getItem("stocks_list") != null) {
       let value = localStorage.getItem("stocks_list");
       value = JSON.parse(value);
-      this.setState({ stocks_list: value });
+      this.setState(({ stocks_list: value }), function () {
+            this.getPrice() 
+      });
     }
     else {
       localStorage.setItem("stocks_list", JSON.stringify([]));
     }
 
-      this.getPrice()
+ 
 
 
     this.interval = setInterval(() => {
