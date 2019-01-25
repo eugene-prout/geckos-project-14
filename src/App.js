@@ -26,7 +26,7 @@ class App extends Component {
       localStorage.setItem("stocks_list", JSON.stringify([]));
     }
 
-
+      this.getPrice()
 
 
     this.interval = setInterval(() => {
