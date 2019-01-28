@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import './App.css';
 import 'bulma/css/bulma.css';
 
 
 import Header from './components/Header';
 import Favourites from './components/Favourites';
 import Dashboard from './components/Dashboard';
+
+class BreakSignal { }
+
 
 class App extends Component {
 
@@ -31,7 +33,7 @@ class App extends Component {
 
     this.interval = setInterval(() => {
       this.getPrice()
-    }, 10000);
+    }, 5000);
 
   }
   url = "";
@@ -48,7 +50,8 @@ class App extends Component {
       sector: "",
       website: "www.apple.com af",
       description: ""
-    }
+    },
+    unknown_stock: false
   };
 
   removeFavourite = index => {
@@ -58,21 +61,25 @@ class App extends Component {
       stocks_list: stocks_list.filter((stock, i) => {
         return i !== index;
       })
-    },function () {
-    console.log(this.state.stocks_list)
+    }, function () {
       localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
-    
 
-  });
-}
+
+    });
+  }
 
   handleFavAdd = stock => {
+    const { stocks_list } = this.state;
+    let tickers = stocks_list.map(_stock => _stock.ticker);
 
+    
+    if (!(tickers.includes(stock.ticker))) {
     this.setState(({ stocks_list: [...this.state.stocks_list, stock] }), function () {
       localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
       this.getPrice()
 
     });
+  }
   }
 
   handleQuerySubmit = stock => {
@@ -82,9 +89,22 @@ class App extends Component {
 
     fetch(url)
       .then(results => {
+
+        if (results.status === 404) {
+          console.log("status bad")
+          throw new BreakSignal()
+        }
         return results.json()
       })
+      .catch(BreakSignal, () => {
+        console.log("break signal")
+        this.setState({
+          unknown_stock: true
+        })
+      })
       .then(function (response) {
+        console.log(response)
+
         query.ticker = response.company.symbol
         query.name = response.company.companyName
         query.price = response.price
@@ -99,9 +119,14 @@ class App extends Component {
         this.setState({
           query: query,
           show: true
-        });
-      })
+        })
+      });
+
+
   }
+
+
+
 
 
   getPrice = () => {
@@ -146,7 +171,7 @@ class App extends Component {
     return (
       <div className="component-wrapper">
         <Header></Header>
-        <section class="columns is-4 section" style={{ 'padding-top': '1rem' }}>
+        <section className="columns is-4 section" style={{ 'paddingTop': '1rem' }}>
 
           <Dashboard
             handleSubmit={this.handleFavAdd}
@@ -154,6 +179,12 @@ class App extends Component {
             stock={this.state.query}
             querySub={this.handleQuerySubmit}
           ></Dashboard>
+
+          {this.state.unknown_stock &&
+            <h2>
+              Unkown Stock
+        </h2>
+          }
           <Favourites
             stocks={this.state.stocks_list}
             removeFavStock={this.removeFavourite}

@@ -24,7 +24,7 @@ return null
                 <td>{row.ticker}</td>
                 
                 <td>{"$" + row.price.toFixed(2)}</td>
-                <td><input class="button" type="submit" value="X" onClick={() => props.removeFavStock(index)}></input></td>
+                <td><input className="button" type="submit" value="X" onClick={() => props.removeFavStock(index)}></input></td>
             </tr>
         );
     });
@@ -43,11 +43,11 @@ class Favourites extends Component {
 
 
         return (
-            <section class="column">
-                <div class="box">
-                    <h1 class="title">Favourite stocks</h1>
+            <section className="column">
+                <div className="box">
+                    <h1 className="title">Favourite stocks</h1>
 
-                    <table class="table is-narrow is-hoverable is-fullwidth">
+                    <table className="table is-narrow is-hoverable is-fullwidth">
                         <TableHeader />
                         <TableBody stocks={stocks} removeFavStock={removeFavStock} getPrice={getPrice}/>
 

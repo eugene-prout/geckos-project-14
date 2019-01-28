@@ -3,10 +3,10 @@ import 'bulma/css/bulma.css';
 
 const Results = props => {
     return (
-        <div class="box">
-            <h2 class="subtitle">Search Results for {props.stock.ticker}:</h2>
-            <div class="table-container">
-                <table class="table is-narrow is-hoverable is-fullwidth">
+        <div className="box">
+            <h2 className="subtitle">Search Results for {props.stock.ticker}:</h2>
+            <div className="table-container">
+                <table className="table is-narrow is-hoverable is-fullwidth">
                     <thead>
                         <tr>
                             <th>Query</th>
@@ -60,7 +60,7 @@ const Results = props => {
 
 
 
-                <input class="button" type="button" value="Add To Favourites" onClick={props.DaddtoFav}></input>
+                <input className="button" type="button" value="Add To Favourites" onClick={props.DaddtoFav}></input>
 
 
             </div>
@@ -96,7 +96,14 @@ class Dashboard extends Component {
 
     addToFav = () => {
         console.log("add fav called");
-        this.props.handleSubmit(this.state);
+        this.setState({
+            ticker: this.props.stock.ticker
+          },function () {
+            this.props.handleSubmit(this.state)
+          
+      
+        });
+
     }
 
     submitQuery = () => {
@@ -104,27 +111,27 @@ class Dashboard extends Component {
     }
 
     render() {
-        const { ticker, price} = this.state
+        const { ticker} = this.state
         const {show, stock} = this.props
 
         return (
 
-            <section class="column is-three-quarters">
-                <div class=" box">
-                    <h1 class="title">Search for stock data</h1>
-                    <form>
-                        <div class="field is-grouped">
-                            <p class="control is-expanded">
-                                <input class="input" type="input" name="ticker"
+            <section className="column is-three-quarters">
+                <div className=" box">
+                    <h1 className="title">Search for stock data</h1>
+
+                        <div className="field is-grouped">
+                            <p className="control is-expanded">
+                                <input className="input" type="input" name="ticker"
                                  placeholder="Stock Ticker/Name"
                                     value={ticker} onChange={this.handleChange} ></input>
                             </p>
 
-                            <p class="control">
-                                <input class="button" type="button" value="Submit" onClick={this.submitQuery}></input>
+                            <p className="control">
+                                <input className="button" type="button" value="Submit" onClick={this.submitQuery}></input>
                             </p>
                         </div>
-                    </form>
+
                 </div>
                 { show ? <Results stock={stock} DaddtoFav={this.addToFav} /> : null }
 
