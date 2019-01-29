@@ -23,14 +23,14 @@ class App extends Component {
       let value = localStorage.getItem("stocks_list");
       value = JSON.parse(value);
       this.setState(({ stocks_list: value }), function () {
-            this.getPrice() 
+        this.getPrice()
       });
     }
     else {
       localStorage.setItem("stocks_list", JSON.stringify([]));
     }
 
- 
+
 
 
     this.interval = setInterval(() => {
@@ -74,14 +74,14 @@ class App extends Component {
     const { stocks_list } = this.state;
     let tickers = stocks_list.map(_stock => _stock.ticker);
 
-    
-    if (!(tickers.includes(stock.ticker))) {
-    this.setState(({ stocks_list: [...this.state.stocks_list, stock] }), function () {
-      localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
-      this.getPrice()
 
-    });
-  }
+    if (!(tickers.includes(stock.ticker))) {
+      this.setState(({ stocks_list: [...this.state.stocks_list, stock] }), function () {
+        localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
+        this.getPrice()
+
+      });
+    }
   }
 
   handleQuerySubmit = stock => {
@@ -105,7 +105,6 @@ class App extends Component {
         })
       })
       .then(function (response) {
-        console.log(response)
 
         query.ticker = response.company.symbol
         query.name = response.company.companyName
@@ -115,6 +114,7 @@ class App extends Component {
         query.industry = response.company.industry
         query.website = response.company.website
         query.description = response.company.description
+        query.price = response.price
         // console.log(this.state.query.exchange)
       })
       .then(() => {
@@ -128,7 +128,26 @@ class App extends Component {
   }
 
 
+  getIndivPrice = stock => {
+    console.log("Get Individual Price Called " + stock)
+    var url = stock;
+    var indivStock = {...this.state.stocks_list[stock]}
+console.log(indivStock);
+    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
+      .then(results => {
+        return results.json();
+      })
+      .then(() => {
 
+        this.setState({
+
+        })
+
+      });
+    
+
+
+  }
 
 
   getPrice = () => {
@@ -140,6 +159,10 @@ class App extends Component {
       url += key.ticker + ","
     });
 
+    let value = localStorage.getItem("stocks_list");
+    value = JSON.parse(value); 
+var outdated = false;
+
     fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
       .then(results => {
         return results.json();
@@ -150,9 +173,19 @@ class App extends Component {
         Object.keys(response).forEach(function (ResponseStockName, index) {
           // loops over saved stocks
           Object.keys(stocks_list).forEach(index => {
-
+            
             if (stocks_list[index].ticker === ResponseStockName) {
               stocks_list[index].price = response[ResponseStockName].price;
+              
+              Object.keys(value).forEach(index => {
+                if (value[index].ticker === stocks_list[index].ticker) {
+                  if (value[index].price !== stocks_list[index].price)
+                  {
+                    outdated = true
+                  }
+                  
+                }
+              })
             }
           })
 
@@ -162,6 +195,10 @@ class App extends Component {
       .then(() => {
         this.setState({
           stocks_list: stocks_list
+        }, () => {
+          if (outdated) {
+          localStorage.setItem("stocks_list", JSON.stringify(this.state.stocks_list))
+          }
         });
       });
 

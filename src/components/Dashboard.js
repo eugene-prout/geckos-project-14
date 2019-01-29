@@ -91,38 +91,38 @@ class Dashboard extends Component {
         this.setState({
             [name]: value
         });
-        
+
     }
-    
-      getPrice = stock => {
-    console.log("getPrice called")
-    var url = stock
-    
-    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
-      .then(results => {
-        return results.json();
-      })
-      .then(function (response) {
 
-        this.setState({
-          price: response
-        });
+    getPrice = stock => {
+        console.log("getPrice called")
+        var url = stock
 
-      });
+        fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
+            .then(results => {
+                return results.json();
+            })
+            .then(function (response) {
+
+                this.setState({
+                    price: response
+                });
+
+            });
 
 
-  }
-      
+    }
+
 
     addToFav = () => {
         console.log("add fav called");
-        this.getPrice(this.state.ticker);
         this.setState({
-            ticker: this.props.stock.ticker
-          },function () {
+            ticker: this.props.stock.ticker,
+            price: this.props.stock.price
+        }, function () {
             this.props.handleSubmit(this.state)
-          
-      
+
+
         });
 
     }
@@ -132,8 +132,8 @@ class Dashboard extends Component {
     }
 
     render() {
-        const { ticker} = this.state
-        const {show, stock} = this.props
+        const { ticker } = this.state
+        const { show, stock } = this.props
 
         return (
 
@@ -141,20 +141,20 @@ class Dashboard extends Component {
                 <div className=" box">
                     <h1 className="title">Search for stock data</h1>
 
-                        <div className="field is-grouped">
-                            <p className="control is-expanded">
-                                <input className="input" type="input" name="ticker"
-                                 placeholder="Stock Ticker/Name"
-                                    value={ticker} onChange={this.handleChange} ></input>
-                            </p>
+                    <div className="field is-grouped">
+                        <p className="control is-expanded">
+                            <input className="input" type="input" name="ticker"
+                                placeholder="Stock Ticker/Name"
+                                value={ticker} onChange={this.handleChange} ></input>
+                        </p>
 
-                            <p className="control">
-                                <input className="button" type="button" value="Submit" onClick={this.submitQuery}></input>
-                            </p>
-                        </div>
+                        <p className="control">
+                            <input className="button" type="button" value="Submit" onClick={this.submitQuery}></input>
+                        </p>
+                    </div>
 
                 </div>
-                { show ? <Results stock={stock} DaddtoFav={this.addToFav} /> : null }
+                {show ? <Results stock={stock} DaddtoFav={this.addToFav} /> : null}
 
             </section>
         );
