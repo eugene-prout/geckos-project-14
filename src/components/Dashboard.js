@@ -116,7 +116,7 @@ class Dashboard extends Component {
 
     addToFav = () => {
         console.log("add fav called");
-        getPrice(this.state.ticker);
+        this.getPrice(this.state.ticker);
         this.setState({
             ticker: this.props.stock.ticker
           },function () {
