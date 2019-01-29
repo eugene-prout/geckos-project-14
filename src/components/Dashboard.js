@@ -93,9 +93,30 @@ class Dashboard extends Component {
         });
         
     }
+    
+      getPrice = stock => {
+    console.log("getPrice called")
+    var url = stock
+    
+    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
+      .then(results => {
+        return results.json();
+      })
+      .then(function (response) {
+
+        this.setState({
+          price: response
+        });
+
+      });
+
+
+  }
+      
 
     addToFav = () => {
         console.log("add fav called");
+        getPrice(this.state.ticker);
         this.setState({
             ticker: this.props.stock.ticker
           },function () {
