@@ -77,7 +77,7 @@ class Dashboard extends Component {
         super(props);
 
         this.initialState = {
-            ticker: '',
+            ticker: 'aapl',
             price: 123,
         };
 
@@ -95,10 +95,10 @@ class Dashboard extends Component {
     }
 
     getPrice = stock => {
-        console.log("getPrice called")
+        console.log("getPrice called from dashboard")
         var url = stock
 
-        fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
+        fetch("https://cloud.iexapis.com/stable/stock/" + url +"/batch?types=price&token=pk_c242de406ab6483493e292d64a4ed385")
             .then(results => {
                 return results.json();
             })

@@ -44,7 +44,7 @@ class App extends Component {
     stocks_list: [],
     show: false,
     query: {
-      ticker: "Testing",
+      ticker: "aapl",
       name: "Apple Inc.",
       price: "123",
       exchange: "Nasdaq",
@@ -86,9 +86,11 @@ class App extends Component {
 
   handleQuerySubmit = stock => {
     const { query } = this.state
-
-    var url = "https://api.iextrading.com/1.0/stock/" + stock.ticker + "/batch?types=company,price";
-
+    console.log("making req");
+    var url = "https://cloud.iexapis.com/stable/stock/" + stock.ticker +"/batch?types=company,quote&token=pk_c242de406ab6483493e292d64a4ed385";
+    // var url = "https://api.iextrading.com/1.0/stock/" + stock.ticker + "/batch?types=company,price";
+    // "https://sandbox.iexapis.com/stable/stock/" + stock.ticker +"/batch?types=company,price&token=pk_c242de406ab6483493e292d64a4ed385"
+    console.log(url);
     fetch(url)
       .then(results => {
 
@@ -108,13 +110,14 @@ class App extends Component {
 
         query.ticker = response.company.symbol
         query.name = response.company.companyName
-        query.price = response.price
+        
+        query.price = response.quote.latestPrice
+        
         query.exchange = response.company.exchange
         query.sector = response.company.sector
         query.industry = response.company.industry
         query.website = response.company.website
         query.description = response.company.description
-        query.price = response.price
         // console.log(this.state.query.exchange)
       })
       .then(() => {
@@ -127,13 +130,14 @@ class App extends Component {
 
   }
 
+  // 
 
   getIndivPrice = stock => {
     console.log("Get Individual Price Called " + stock)
-    var url = stock;
+    
     var indivStock = {...this.state.stocks_list[stock]}
 console.log(indivStock);
-    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
+    fetch("https://cloud.iexapis.com/stable/stock/" + stock.ticker +"/batch?types=price&token=pk_c242de406ab6483493e292d64a4ed385")
       .then(results => {
         return results.json();
       })
@@ -154,28 +158,30 @@ console.log(indivStock);
     console.log("getPrice called")
     const { stocks_list } = this.state
     var url = ""
-    stocks_list.forEach((key, index) => {
-      // return console.log(key.ticker)
-      url += key.ticker + ","
-    });
+    if (stocks_list.length !== 1) {
+      url = stocks_list.map(e => e.ticker).join(",");
+    } else {
+      console.log(stocks_list);
+      url = stocks_list[0].ticker;
+    }
+
 
     let value = localStorage.getItem("stocks_list");
     value = JSON.parse(value); 
 var outdated = false;
 
-    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=" + url + "&types=price")
+fetch("https://cloud.iexapis.com/stable/stock/market/batch?symbols=" + url + "&types=quote&token=pk_c242de406ab6483493e292d64a4ed385")
       .then(results => {
         return results.json();
       })
       .then(function (response) {
-
         // loops over each stock in the response
         Object.keys(response).forEach(function (ResponseStockName, index) {
           // loops over saved stocks
           Object.keys(stocks_list).forEach(index => {
             
             if (stocks_list[index].ticker === ResponseStockName) {
-              stocks_list[index].price = response[ResponseStockName].price;
+              stocks_list[index].price = response[ResponseStockName]["quote"].latestPrice;
               
               Object.keys(value).forEach(index => {
                 if (value[index].ticker === stocks_list[index].ticker) {
